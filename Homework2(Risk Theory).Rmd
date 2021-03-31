@@ -1,0 +1,146 @@
+---
+title: "HW2_Risk_Theory"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r }
+ibm <- read.csv("C:\\Users\\cmunger\\Downloads\\IBM.csv")
+attach(ibm)
+
+#4.
+#a.
+#line plot of prices for ibm
+date1 = as.Date(ibm$Date)
+plot(x = date1, y = ibm$Adj.Close, type = 'l')
+
+#line plot of log returns for ibm
+logRet1 <- diff(log(ibm$Adj.Close))
+plot(x = date1[-1], y = logRet1, type = 'l')
+
+
+#b.
+#mean of log returns
+m1 <- mean(logRet1)
+m1
+
+#variance of log returns
+v1<- var(logRet1)
+v1
+
+#c.
+#There is strong curvature in the tails of the qqplot, so it appears the log returns are not normally distributed.
+qqnorm(logRet1); qqline(logRet1)
+
+#d.
+#Value at risk for log returns where VaR = St-1*sigma*(1-e^VaR.95)+mean
+VaR1 <- 100*sqrt(v1)*(1-exp(-1.645))+m1
+VaR1
+
+#Expected Shortfall for log returns where ES = St-1*(sigma/(alpha*sqrt(2pi)))*e^-((VaR^2)/2)+mean
+ES1 <- 100*(sqrt(v1)*(1/(.05*sqrt(2*pi)))*exp(-((1.645^2))/2)+m1)
+ES1
+
+#e.
+#By chebyshev inequality, with assuming E[L]= 0 and the distribution is symmetric about 0. Then VaR <= St-1*sigma*sqrt(1/(2*alpha))
+UpperBound1 <- 100*(sqrt(v1)*sqrt(1/(2*.05)))
+UpperBound1
+
+
+
+#5.
+#a.
+#Sorting log returns from smallest to largest
+logRetSorted1 <- sort(logRet1, decreasing = FALSE)
+head(logRetSorted1)
+
+#Multiply by -1
+NeglogRetSorted1 <- logRetSorted1*-1
+head(NeglogRetSorted1)
+nrow(ibm)
+
+#N = number of data points * alpha
+N <- 3022*.05
+N #151 rounded down
+NeglogRetSorted1[151]
+
+#VaR = St-1*(1-e^(-NeglogRetSorted1[151]))
+NonpVaR1 <- 100*(1-exp(-(0.02149527)))
+NonpVaR1
+
+#b.
+#ES = St-1*(1-(e^-R1+e^-R2+...+e^-R151)/151)
+NonpES1 <- 100*(1-(sum(exp(NeglogRetSorted1[1:151]))/151))
+NonpES1
+
+#P2
+#4.(With Project Company)
+msft <- read.csv("C:\\Users\\cmunger\\Downloads\\MSFT.csv")
+attach(msft)
+
+#a.
+#line plot of prices for msft
+date2 = as.Date(msft$Date)
+plot(x = date2, y = msft$Adj.Close, type = 'l')
+
+#line plot of log returns for msft
+logRet2 <- diff(log(msft$Adj.Close))
+plot(x = date2[-1], y = logRet2, type = 'l')
+
+#b.
+#mean of log returns
+m2 <- mean(logRet2)
+m2
+
+#variance of log returns
+v2 <- var(logRet2)
+v2
+
+#c.
+#Similar to ibm the qqplot has heavy curvature in the tails which indicates non-normality.
+qqnorm(logRet2); qqline(logRet2)
+
+#d.
+#Value at risk for log returns where VaR = St-1*sigma*(1-e^VaR.95)+mean
+VaR2 <- 100*sqrt(v2)*(1-exp(-1.645))+m2
+VaR2
+
+#Expected Shortfall for log returns where ES = St-1*(sigma/(alpha*sqrt(2pi)))*e^-((VaR^2)/2)+mean
+ES2 <- 100*(sqrt(v2)*(1/(.05*sqrt(2*pi)))*exp(-((1.645^2))/2)+m2)
+ES2
+
+#e.
+#By chebyshev inequality, with assuming E[L]= 0 and the distribution is symmetric about 0. Then VaR <= St-1*sigma*sqrt(1/(2*alpha))
+UpperBound2 <- 100*(sqrt(v2)*sqrt(1/(2*.05)))
+UpperBound2
+
+#5.(With Project Company)
+#a.
+#Sorting log returns from small to large
+logRetSorted2 <- sort(logRet2, decreasing = FALSE)
+#Multiplying by -1
+NeglogRetSorted2 <- logRetSorted2*-1
+head(NeglogRetSorted2)
+nrow(msft)
+
+#N = number of data points * alpha
+N <- 8820*.05
+N #441
+NeglogRetSorted2[441]
+
+#VaR = St-1*(1-e^(-NeglogRetSorted2[441]))
+NonpVaR2 <- 100*(1-exp(-0.03085727))
+NonpVaR2
+
+#b.
+#ES = St-1*(1-(e^-R1+e^-R2+...+e^-R441)/441)
+NonpES2 <- 100*(1-(sum(exp(NeglogRetSorted2[1:441]))/441))
+NonpES2
+
+
+```
+
