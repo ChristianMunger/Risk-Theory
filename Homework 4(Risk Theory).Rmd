@@ -1,0 +1,169 @@
+---
+title: "Homework 4"
+author: "Christian Munger"
+date: "4/8/2021"
+output:
+  pdf_document:
+    latex_engine: xelatex
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r }
+data <- read.csv("C:\\Users\\cmunger\\Downloads\\AppleIBM.csv")
+
+
+#5.
+#a.
+apple.prices <- data$Apple
+IBM.prices <- data$IBM
+
+apple.rets = -diff(apple.prices)/apple.prices[-length(apple.prices)] # get arith rets
+IBM.rets = -diff(IBM.prices)/IBM.prices[-length(IBM.prices)] # get arith rets
+
+mean(apple.rets)
+mean(IBM.rets)
+
+#Mean Vector
+mean.vector1 <- matrix(c(mean(apple.rets), mean(IBM.rets)), nrow = 2, ncol = 1)
+mean.vector1
+
+
+cov(cbind(apple.rets,IBM.rets))
+
+#Covariance Matrix
+cov.matrix1 <- matrix(data = c(cov(cbind(apple.rets,IBM.rets))), nrow = 2, ncol = 2)
+cov.matrix1
+
+#The correlation is .407, so there is not much, but there some positive relationship between apple.rets and IBM.rets.  
+#Thus, for risk management this means that the arithmetic returns for both these companies follow a 
+#positive somewhat linear trend over time.
+cor(apple.rets, IBM.rets)
+
+
+#b.
+#Weight Vector(half and half)
+weighted1 <- matrix(data = c(.5,.5), nrow = 2, ncol = 1)
+weighted1
+
+#Expected Return
+portfolio.mean1 <- t(weighted1)%*%mean.vector1
+portfolio.mean1
+
+#Variance
+portfolio.variance1 <- t(weighted1)%*%cov.matrix1%*%weighted1
+portfolio.variance1
+
+#c.
+#Value at Risk
+VaR.1 <- 1000*sqrt(portfolio.variance1)*2.326
+VaR.1
+
+#Expected Shortfall
+ES.1 <-  1000%*%sqrt(portfolio.variance1)*(1/(.05*sqrt(2*pi)))*exp((-(2.362^2)/2))
+ES.1
+  
+#d.
+#Weight Vector(one-third and two-third)
+weighted2 <- matrix(data = c(1/3,2/3), nrow = 2, ncol = 1)
+weighted2
+
+#Expected Return
+portfolio.mean2 <- t(weighted2)%*%mean.vector1
+portfolio.mean2
+
+#Variance
+portfolio.variance2 <- t(weighted2)%*%cov.matrix1%*%weighted2
+portfolio.variance2
+
+#Value at Risk
+VaR2 <-  1000*sqrt(portfolio.variance2)*2.326
+VaR2
+
+#Expected Shortfall
+ES2 <- 1000*sqrt(portfolio.variance2)*(1/(.05*sqrt(2*pi)))*exp(-((2.362^2)/2))
+ES2
+
+  
+
+  
+#P4.
+#a.
+#Load returns for previous 5 years
+Msft <- read.csv("C:\\Users\\cmunger\\Downloads\\MSFT.csv")
+Facebook <- read.csv("C:\\Users\\cmunger\\Downloads\\FB.csv")
+
+Msft.prices <- Msft$Adj.Close
+Facebook.prices <- Facebook$Adj.Close
+
+Msft.rets = -diff(Msft.prices)/Msft.prices[-length(Msft.prices)] # get arith rets
+Facebook.rets = -diff(Facebook.prices)/Facebook.prices[-length(Facebook.prices)] # get arith rets
+
+
+
+mean(Msft.rets)
+mean(Facebook.rets)
+
+#Mean Vector
+mean.vector2 <- matrix(c(mean(Msft.rets), mean(Facebook.rets)), nrow = 2, ncol = 1)
+mean.vector2
+
+
+cov(cbind(Msft.rets,Facebook.rets))
+
+#Covariance Matrix
+cov.matrix2 <- matrix(data = c(cov(cbind(Msft.rets,Facebook.rets))), nrow = 2, ncol = 2)
+cov.matrix2
+
+#The correlation between Msft and Facebook is stronger than IBM and Apple.  
+#Thus, over time we could expect a stronger relationship between the arithmetic returns 
+#for Microsoft and Facebook
+cor(Msft.rets, Facebook.rets)
+
+
+#b.
+#Expected Return
+portfolio.mean3 <- t(weighted1)%*%mean.vector2
+portfolio.mean3
+
+#Variance
+portfolio.variance3 <- t(weighted1)%*%cov.matrix2%*%weighted1
+portfolio.variance3
+
+
+
+#c.
+#Value at Risk
+VaR3 <- 1000*sqrt(portfolio.variance3)*2.326
+VaR3
+
+#Expected Shortfall
+ES3 <- 1000*sqrt(portfolio.variance3)*(1/(.05*sqrt(2*pi)))*exp(-((2.362^2)/2))
+ES3
+  
+
+#d.
+#Expected Return
+portfolio.mean4 <- t(weighted2)%*%mean.vector2
+portfolio.mean4
+  
+#Variance
+portfolio.variance4 <- t(weighted2)%*%cov.matrix2%*%weighted2
+portfolio.variance4
+
+
+#Value at Risk
+VaR4 <-  1000*sqrt(portfolio.variance4)*2.326
+VaR4
+
+#Expected Shortfall
+ES4 <- 1000*sqrt(portfolio.variance4)*(1/(.05*sqrt(2*pi)))*exp(-((2.362^2)/2))
+
+```
+

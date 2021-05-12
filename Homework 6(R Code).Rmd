@@ -1,0 +1,124 @@
+---
+title: "Homework 6"
+author: "Christian Munger"
+date: "4/29/2021"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r, tidy=TRUE, tidy.opts=list(width.cutoff=60)}
+
+#3.
+MSFT <- read.csv("C:\\Users\\cmunger\\OneDrive\\Risk Theory\\MSFT.csv")
+
+
+#a.
+date=as.Date(MSFT[,1])
+
+#Closing Prices
+plot(date, MSFT$Adj.Close, type = 'l', main="Microsoft Stock 	
+2011-04-29 - 2021-04-28",ylab="Prices",xlab="Year")
+
+#Log Returns
+logret = diff(log(MSFT[,6]))
+plot(date[-1], logret, type = 'l',main="Microsoft Stock 	
+2011-04-30 - 2021-04-28",ylab="Log Returns",xlab="Year")
+
+
+#b.
+library('fGarch')
+
+#Fitting GARCH(1,1) Model
+garch.model <- garchFit(formula = ~ garch(1, 1), data=logret,include.mean = F)
+garch.model
+
+
+#Estimated Parameters
+garch.model@fit$params$params
+
+mu = garch.model@fit$params$params[1]
+mu
+
+omega = garch.model@fit$params$params[2]
+omega
+
+alpha1 = garch.model@fit$params$params[3]
+alpha1
+
+beta1 = garch.model@fit$params$params[5]
+beta1
+
+
+
+#c.
+#ACF Log Returns
+plot(garch.model, which = 4)
+
+#ACF Squared Log Returns
+plot(garch.model, which = 5)
+
+#Standardized Residuals
+plot(garch.model, which = 9)
+
+
+#ACF of Standardized Residuals
+plot(garch.model, which = 10)
+
+#ACF of Squared Standardized Residuals
+plot(garch.model, which = 11)
+
+
+#We can see higher correlations in the ACF of the squared log returns than the ACF of log returns as 
+#expected.  The  ACF of the squared log returns shows the correlation for the magnitude of change the 
+#following day without regards to positive or negative values.  Because of this, we know the dependence 
+#comes from the variance rather than the mean.  Thus, it is important to use a GARCH model for our data.
+
+
+
+
+
+
+#d.
+#Two conditional standard deviations superimposed
+plot(garch.model, which = 3)
+
+#qqplot
+plot(garch.model, which = 13)
+
+#The two conditional standard deviations superimposed plot does not show many instances outside of two 
+#standard deviations.  So, there is not evidence of non-normality from this plot.  However, the qqplot 
+#curves heavily in the tails, so it appears the standardized residuals may not be normally distributed.
+
+
+#e.
+sigma.now <- garch.model@sigma.t[length(garch.model@sigma.t)]
+sigma.now
+
+
+sigma.next <- sqrt(omega + alpha1*logret[length(logret)]^2+beta1*sigma.now^2)
+sigma.next
+
+#Value at Risk
+VaR <- 100*(1-exp(-sigma.next*1.645))
+VaR
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
